@@ -300,7 +300,15 @@
 		outline: 2px solid var(--kembec-focus);
 	}
 	.play-game > .off {
-		@apply before:absolute before:inset-0 before:z-30 before:cursor-not-allowed before:bg-surface;
+		@apply before:absolute before:inset-0 before:z-30 before:flex before:cursor-not-allowed before:items-center before:justify-center before:bg-surface before:text-secondary;
+	}
+	.play-game > .off::before {
+		content: "waiting";
+		font-family: var(--kembec-font-code);
+		font-size: var(--kembec-rotulo);
+		letter-spacing: var(--kembec-rotulo-tracking);
+		text-transform: uppercase;
+		top: calc(var(--kembec-subtitulo-line) * var(--kembec-subtitulo) + 16px);
 	}
 	.play-game > .player_1.off {
 		@apply before:right-4 lg:before:right-12;

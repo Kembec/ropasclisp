@@ -82,6 +82,16 @@
 		letter-spacing: var(--kembec-rotulo-tracking);
 		@apply uppercase text-secondary;
 	}
+	@media (max-width: 639px) {
+		.gestures > li {
+			padding-left: 6px;
+		}
+		.gestures span {
+			font-size: 12px;
+			letter-spacing: 0;
+			text-transform: none;
+		}
+	}
 	.players {
 		@apply grid grid-cols-1 gap-4 sm:grid-cols-2;
 	}
