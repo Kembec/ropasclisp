@@ -1,11 +1,56 @@
+@import "../styles/kembec-tokens.css";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Brand fonts from Personal/_marca/05-fuentes, served from /fonts. Colour and size come only from
+   kembec-tokens.css: no loose hex values here. */
+@font-face {
+	font-family: "Inter";
+	src: url("/fonts/Inter-latin.woff2") format("woff2");
+	font-weight: 100 900;
+	font-display: swap;
+}
+@font-face {
+	font-family: "Inter";
+	src: url("/fonts/Inter-latin-ext.woff2") format("woff2");
+	font-weight: 100 900;
+	font-display: swap;
+	unicode-range: U+0100-024F, U+1E00-1EFF;
+}
+@font-face {
+	font-family: "Geist Mono";
+	src: url("/fonts/GeistMono-latin.woff2") format("woff2");
+	font-weight: 100 900;
+	font-display: swap;
+}
+@font-face {
+	font-family: "Geist Mono";
+	src: url("/fonts/GeistMono-latin-ext.woff2") format("woff2");
+	font-weight: 100 900;
+	font-display: swap;
+	unicode-range: U+0100-024F, U+1E00-1EFF;
+}
+
 html {
-	font-family: "Roboto Slab", serif;
-	@apply bg-slate-900 text-slate-50;
+	background: var(--kembec-paper);
+	color: var(--kembec-ink);
+	font-family: var(--kembec-font);
+	color-scheme: light dark;
+	-webkit-font-smoothing: antialiased;
+}
+body {
+	font-size: var(--kembec-cuerpo);
+	line-height: var(--kembec-cuerpo-line);
+	overflow-x: hidden;
+}
+::selection {
+	background: var(--kembec-selection);
+}
+:focus-visible {
+	outline: 2px solid var(--kembec-focus);
+	outline-offset: 3px;
 }
 html *:not([contenteditable="true"]) {
 	@apply select-none;

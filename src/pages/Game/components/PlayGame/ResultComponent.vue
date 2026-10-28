@@ -51,9 +51,9 @@
 			<div class="p1">
 				<font-awesome-icon :icon="'fa-regular ' + p1Choice" />
 			</div>
-			<div class="vs">VS</div>
+			<div class="vs">vs</div>
 			<div class="p2">
-				<font-awesome-icon :icon="'fa-regular ' + (p2Choice ?? 'fa-hand-peace')" />
+				<font-awesome-icon :icon="'fa-regular ' + (p2Choice ?? p1Choice)" />
 			</div>
 			<div class="message">{{ message }}</div>
 		</div>
@@ -61,22 +61,30 @@
 </template>
 <style lang="postcss" scoped>
 	aside {
-		@apply fixed top-0 left-0 z-50 h-screen w-screen bg-black/50;
+		@apply fixed top-0 left-0 z-50 h-screen w-screen bg-paper;
 	}
 	.content {
-		@apply absolute left-1/2 top-1/2 grid min-w-max -translate-x-1/2 -translate-y-1/2 grid-cols-3 gap-5 rounded-lg bg-white p-10 text-slate-900;
+		@apply absolute inset-x-0 top-1/2 mx-auto grid w-full max-w-3xl -translate-y-1/2 grid-cols-3 items-center gap-5 border-y border-ink py-10 text-ink;
+		padding-inline: var(--kembec-margin);
 	}
 	.content > div {
 		@apply flex justify-center;
 	}
 	.content > .p1,
 	.content > .p2 {
-		@apply text-4xl lg:text-6xl;
+		font-size: clamp(56px, 12vw, 128px);
 	}
 	.content > .vs {
-		@apply items-center text-2xl lg:text-4xl;
+		font-family: var(--kembec-font-code);
+		font-size: var(--kembec-dato);
+		letter-spacing: var(--kembec-rotulo-tracking);
+		@apply text-secondary;
 	}
 	.message {
-		@apply col-span-full text-xl lg:text-3xl;
+		@apply col-span-full justify-start;
+		font-size: var(--kembec-titular);
+		line-height: var(--kembec-titular-line);
+		font-weight: var(--kembec-titular-weight);
+		letter-spacing: var(--kembec-titular-tracking);
 	}
 </style>

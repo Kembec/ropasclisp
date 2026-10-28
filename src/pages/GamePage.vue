@@ -1,11 +1,14 @@
 <script lang="ts" setup>
 	import { computed, defineAsyncComponent, onBeforeMount, ref, watch } from "vue";
+	import { useRouter } from "vue-router";
 
 	import PlayGame from "./Game/components/PlayGameComponent.vue";
 	import StartGame from "./Game/components/StartGameComponent.vue";
 	import type Result from "./Game/interfaces/ResultInterface";
 
 	const LastResults = defineAsyncComponent(() => import("./Game/components/LastResultsComponent.vue"));
+
+	const router = useRouter();
 
 	// Data
 	const page = ref<string>("StartGame");
@@ -59,12 +62,17 @@
 </script>
 <template>
 	<article id="game">
-		<a
-			href="/help"
+		<button
+			type="button"
 			class="help"
+			aria-label="How to play"
+			@click="router.push('/help')"
 		>
-			<font-awesome-icon :icon="['fas', 'question']" />
-		</a>
+			<font-awesome-icon
+				:icon="['fas', 'question']"
+				aria-hidden="true"
+			/>
+		</button>
 		<Transition
 			name="slide-fade"
 			mode="out-in"
@@ -96,14 +104,15 @@
 	}
 	#game > :deep(section) {
 		@apply lg:min-h-[calc(100dvh-6.5rem)] min-h-[calc(100dvh-5rem)];
-		@apply px-5 lg:px-[10dvw] xl:px-[15dvw] py-5 lg:py-10 flex flex-col;
+		@apply py-5 lg:py-10 flex flex-col;
+		padding-inline: var(--kembec-margin);
 	}
 	#game > :deep(section) > * {
 		@apply first:mt-auto last:mb-auto;
 	}
 
 	.help {
-		@apply fixed top-5 right-5 drop-shadow-md bg-slate-950 hover:rounded-lg transition-all text-slate-50 p-3 leading-none;
+		@apply fixed top-4 right-4 z-40 flex h-11 w-11 items-center justify-center border border-ink bg-paper text-ink transition-colors hover:bg-ink hover:text-paper lg:top-7 lg:right-10;
 	}
 
 	.slide-fade-enter-active,

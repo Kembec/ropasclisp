@@ -176,9 +176,16 @@
 				>
 					<Transition name="hand">
 						<font-awesome-icon
+							v-if="p1choice"
 							:key="p1choice"
-							:icon="'fa-regular ' + (p1choice ?? 'fa-hand-peace')"
+							:icon="'fa-regular ' + p1choice"
 						/>
+						<span
+							v-else
+							class="unknown"
+							aria-label="Hidden choice"
+							>?</span
+						>
 					</Transition>
 				</div>
 				<div class="hands">
@@ -186,6 +193,9 @@
 						v-for="(h, n) in Choice"
 						:class="player1Choice === h ? 'on' : undefined"
 						:key="n"
+						type="button"
+						:aria-label="String(n)"
+						:aria-pressed="player1Choice === h"
 						@click="player1Choice = h"
 					>
 						<font-awesome-icon :icon="'fa-regular ' + h" />
@@ -214,9 +224,16 @@
 						mode="out-in"
 					>
 						<font-awesome-icon
+							v-if="p2choice"
 							:key="p2choice"
-							:icon="'fa-regular ' + (p2choice ?? 'fa-hand-peace')"
+							:icon="'fa-regular ' + p2choice"
 						/>
+						<span
+							v-else
+							class="unknown"
+							aria-label="Hidden choice"
+							>?</span
+						>
 					</Transition>
 				</div>
 				<div class="hands">
@@ -224,6 +241,9 @@
 						v-for="(h, n) in Choice"
 						:class="player2Choice === h ? 'on' : undefined"
 						:key="n"
+						type="button"
+						:aria-label="String(n)"
+						:aria-pressed="player2Choice === h"
 						@click="player2Name ? (player2Choice = h) : null"
 					>
 						<font-awesome-icon :icon="'fa-regular ' + h" />
@@ -257,85 +277,95 @@
 
 <style lang="postcss" scoped>
 	.play-game {
-		@apply grid grid-cols-2 gap-x-5 gap-y-16 lg:gap-x-16;
+		@apply grid grid-cols-2;
+		row-gap: var(--kembec-space-bloque);
 	}
 	.play-game > * {
 		@apply relative flex flex-col;
 	}
-	.play-game > * > h2 {
-		@apply p-3 border-2 border-slate-50;
-		@apply mb-auto inline-block justify-center text-center text-3xl lg:text-6xl outline-none truncate;
+	.player_1 {
+		@apply border-r border-rule pr-4 lg:pr-12;
 	}
-	.play-game > * > span {
-		@apply mx-auto mt-10 flex justify-center rounded-lg bg-emerald-500 px-5 py-1.5 text-2xl text-white;
+	.player_2 {
+		@apply pl-4 lg:pl-12;
+	}
+	.play-game > * > h2 {
+		@apply truncate border-b border-ink pb-2 outline-none;
+		font-size: var(--kembec-subtitulo);
+		line-height: var(--kembec-subtitulo-line);
+		font-weight: var(--kembec-subtitulo-weight);
+		letter-spacing: var(--kembec-subtitulo-tracking);
+	}
+	.play-game > * > h2:focus-visible {
+		outline: 2px solid var(--kembec-focus);
 	}
 	.play-game > .off {
-		@apply before:absolute before:top-0 before:left-0 before:z-50 before:h-full before:w-full before:cursor-not-allowed before:rounded-xl before:bg-black/20;
+		@apply before:absolute before:inset-0 before:z-30 before:cursor-not-allowed before:bg-surface;
+	}
+	.play-game > .player_1.off {
+		@apply before:right-4 lg:before:right-12;
+	}
+	.play-game > .player_2.off {
+		@apply before:left-4 lg:before:left-12;
 	}
 
-	.player_1 > .selected-hand {
-		transform: scaleX(-1);
-	}
+	.player_1 > .selected-hand,
 	.player_1 > .hands {
 		transform: scaleX(-1);
 	}
 
 	.selected-hand {
-		@apply relative mx-auto mt-5 rounded-full bg-white p-12 text-4xl text-slate-900 drop-shadow-md lg:mt-10 lg:p-24 lg:text-8xl;
+		@apply relative my-6 flex h-[clamp(120px,22vw,260px)] items-center justify-center text-ink lg:my-10;
+		font-size: clamp(72px, 14vw, 180px);
 	}
-	.selected-hand > svg {
+	.selected-hand > svg,
+	.selected-hand > .unknown {
 		@apply absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2;
+	}
+	.unknown {
+		font-family: var(--kembec-font-code);
+		@apply text-secondary;
 	}
 
 	.hands {
-		@apply mt-7 grid grid-cols-2 gap-x-0 gap-y-7 p-3 text-4xl lg:mt-16 lg:grid-cols-5 lg:gap-x-5 lg:p-10 lg:text-5xl drop-shadow-md;
+		@apply grid grid-cols-3 border-t border-rule sm:grid-cols-5;
 	}
 	.hands > button {
-		@apply mx-auto flex justify-center relative;
+		@apply flex min-h-[48px] items-center justify-center border-b-2 border-transparent py-3 text-secondary transition-colors hover:text-ink;
+		font-size: clamp(24px, 3vw, 36px);
 	}
-	.hands > button::before {
-		@apply content-["▼"] opacity-0 transition-all text-amber-400 duration-200 text-base absolute bottom-[110%];
-	}
-	.hands > button.on::before,
-	.hands > button:hover::before {
-		@apply opacity-100;
-	}
-
-	.off .hands > button::before {
-		@apply hidden;
+	.hands > button.on {
+		@apply border-ink text-ink;
 	}
 
 	.footer {
-		@apply col-span-full flex flex-col;
+		@apply col-span-full grid grid-cols-1 gap-4 sm:grid-cols-2;
 	}
 	.footer > button {
-		@apply mx-auto rounded-sm px-10 font-bold drop-shadow-md  transition-all;
+		@apply flex min-h-[56px] w-full items-center justify-center px-6 transition-colors;
+		font-size: var(--kembec-subtitulo-compact);
+		line-height: var(--kembec-subtitulo-compact-line);
+		font-weight: 700;
 	}
 	#play-game {
-		@apply mb-5 bg-white py-3 text-3xl text-slate-900 hover:bg-white/90 lg:text-4xl hover:tracking-wider;
+		@apply bg-ink text-paper hover:bg-secondary;
 	}
 	#select-players {
-		@apply mb-10 border-2 border-white py-2 text-sm tracking-wider text-white lg:text-base hover:tracking-widest;
+		@apply border border-ink text-ink hover:bg-surface;
 	}
 
 	.hand-enter-active,
 	.hand-leave-active {
-		transition: all 0.2s ease;
+		transition: opacity 0.2s ease, transform 0.2s ease;
 	}
-
-	.hand-enter-from {
-		@apply !translate-x-full;
-	}
-
-	.hand-enter-to {
-		@apply -translate-x-1/2;
-	}
-
-	.hand-leave {
-		@apply -translate-x-1/2;
-	}
-
+	.hand-enter-from,
 	.hand-leave-to {
-		@apply !-translate-x-full !left-0;
+		opacity: 0;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.hand-enter-active,
+		.hand-leave-active {
+			transition: none;
+		}
 	}
 </style>

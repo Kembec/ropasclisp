@@ -3,7 +3,8 @@
 </script>
 <template>
 	<section class="rules">
-		<h1>Rules</h1>
+		<h1>How to play</h1>
+		<p class="lead">Each gesture beats two and loses to two. Same gesture is a draw.</p>
 		<!-- Rock -->
 		<div class="winner">
 			<div class="icon">
@@ -12,7 +13,7 @@
 			<span class="win title">Rock</span>
 		</div>
 		<div class="wins-to">
-			<h2>Win To</h2>
+			<h2>beats</h2>
 			<div>
 				<div class="icon">
 					<font-awesome-icon :icon="'fa-regular ' + Choice.Scissors" />
@@ -34,7 +35,7 @@
 			<span class="win title">Paper</span>
 		</div>
 		<div class="wins-to">
-			<h2>Win To</h2>
+			<h2>beats</h2>
 			<div>
 				<div class="icon">
 					<font-awesome-icon :icon="'fa-regular ' + Choice.Rock" />
@@ -56,7 +57,7 @@
 			<span class="win title">Scissors</span>
 		</div>
 		<div class="wins-to">
-			<h2>Win To</h2>
+			<h2>beats</h2>
 			<div>
 				<div class="icon">
 					<font-awesome-icon :icon="'fa-regular ' + Choice.Paper" />
@@ -78,7 +79,7 @@
 			<span class="win title">Spock</span>
 		</div>
 		<div class="wins-to">
-			<h2>Win To</h2>
+			<h2>beats</h2>
 			<div>
 				<div class="icon">
 					<font-awesome-icon :icon="'fa-regular ' + Choice.Rock" />
@@ -100,7 +101,7 @@
 			<span class="win title">Lizard</span>
 		</div>
 		<div class="wins-to">
-			<h2>Win To</h2>
+			<h2>beats</h2>
 			<div>
 				<div class="icon">
 					<font-awesome-icon :icon="'fa-regular ' + Choice.Paper" />
@@ -124,56 +125,54 @@
 </template>
 <style lang="postcss" scoped>
 	.rules {
-		@apply flex w-full flex-col !mb-20;
+		@apply grid w-full grid-cols-[minmax(0,1fr)_minmax(0,2fr)] items-center pb-12;
+		padding-inline: var(--kembec-margin);
+		padding-top: var(--kembec-space-grupo);
 	}
 	h1 {
-		@apply my-7 flex justify-center text-center text-6xl font-bold tracking-wider;
+		@apply col-span-full;
+		font-size: var(--kembec-titular);
+		line-height: var(--kembec-titular-line);
+		font-weight: var(--kembec-titular-weight);
+		letter-spacing: var(--kembec-titular-tracking);
 	}
-
-	.icon {
-		@apply relative mx-auto rounded-full bg-white;
+	.lead {
+		@apply col-span-full text-secondary;
+		font-size: var(--kembec-entradilla);
+		line-height: var(--kembec-entradilla-line);
+		margin: var(--kembec-space-par) 0 var(--kembec-space-bloque);
 	}
-	.icon > svg {
-		@apply absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2;
+	.winner,
+	.wins-to {
+		@apply flex h-full items-center gap-4 border-t border-rule py-5;
 	}
-
-	.winner {
-		@apply flex flex-col justify-center p-10 lg:p-20;
-	}
-	.winner > .icon {
-		@apply p-24 text-8xl text-slate-900;
+	.winner .icon {
+		font-size: clamp(36px, 6vw, 64px);
 	}
 	.winner .title {
-		@apply text-2xl lg:text-3xl;
+		font-size: var(--kembec-subtitulo);
+		font-weight: var(--kembec-subtitulo-weight);
 	}
-
-	.title {
-		@apply mx-auto  mt-10 rounded-sm px-5 py-3 tracking-wider text-white;
-	}
-	.title.win {
-		@apply bg-emerald-500;
-	}
-	.title.lose {
-		@apply bg-red-500;
-	}
-
 	.wins-to {
-		@apply grid grid-cols-2 justify-center gap-5 border-b border-white/10 px-10 pb-20 text-6xl lg:px-[15dvw];
+		@apply flex-wrap gap-x-8;
 	}
 	.wins-to > h2 {
-		@apply col-span-full justify-center p-10 text-center text-4xl;
+		@apply text-secondary;
+		font-family: var(--kembec-font-code);
+		font-size: var(--kembec-rotulo);
+		letter-spacing: var(--kembec-rotulo-tracking);
+		text-transform: uppercase;
 	}
 	.wins-to > div {
-		@apply flex flex-col;
+		@apply flex items-center gap-3;
 	}
 	.wins-to .icon {
-		@apply mx-auto p-14 text-6xl text-slate-900;
+		font-size: clamp(24px, 3vw, 36px);
 	}
 	.wins-to .title {
-		@apply text-xl lg:text-2xl;
+		font-size: var(--kembec-apoyo);
 	}
-
 	.play-game {
-		@apply flex mx-auto mt-10 rounded-sm bg-amber-500 px-10 py-5 text-4xl font-bold text-white drop-shadow-md hover:bg-amber-400 lg:mt-20 lg:text-5xl;
+		@apply col-span-full mt-10 flex min-h-[56px] items-center justify-center bg-ink px-8 font-bold text-paper transition-colors hover:bg-secondary sm:justify-self-start;
 	}
 </style>
