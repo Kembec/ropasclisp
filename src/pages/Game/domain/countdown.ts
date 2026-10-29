@@ -5,18 +5,17 @@ export const COUNT_MS = BEAT_MS * BEAT_COUNT;
 
 export interface Clock {
 	now(): number;
-	next(callback: () => void): unknown;
+	/** Calls back once `delayMs` from now (or later, never earlier in spirit: the count re-reads `now`). */
+	next(callback: () => void, delayMs: number): unknown;
 	cancel(handle: unknown): void;
 }
 
+// A timer aimed at the next beat, not a poll per animation frame: with the machine loaded, frames came
+// 100 ms apart and the throw landed at 1616 ms instead of 1500 (medicion.json, 390, 14:05Z).
 export const browserClock: Clock = {
 	now: () => performance.now(),
-	next: (callback) =>
-		typeof requestAnimationFrame === "function" ? requestAnimationFrame(callback) : setTimeout(callback, 16),
-	cancel: (handle) =>
-		typeof cancelAnimationFrame === "function"
-			? cancelAnimationFrame(handle as number)
-			: clearTimeout(handle as ReturnType<typeof setTimeout>),
+	next: (callback, delayMs) => setTimeout(callback, Math.max(0, delayMs)),
+	cancel: (handle) => clearTimeout(handle as ReturnType<typeof setTimeout>),
 };
 
 export interface CountHandlers {
@@ -25,9 +24,9 @@ export interface CountHandlers {
 }
 
 /**
- * Runs the count on one clock: every frame reads the elapsed time and fires the beats it has passed,
- * so the beats, the sound and the throw cannot drift apart the way chained per-beat timers do.
- * Returns a cancel function.
+ * Runs the count on one clock: every wake-up reads the elapsed time from the same start and fires the
+ * beats it has passed, so a late wake-up never shifts the ones after it the way chained per-beat
+ * timers do. Each wake-up is aimed at the next beat's boundary. Returns a cancel function.
  */
 export function startCount(clock: Clock, handlers: CountHandlers): () => void {
 	const start = clock.now();
@@ -48,7 +47,8 @@ export function startCount(clock: Clock, handlers: CountHandlers): () => void {
 
 			return;
 		}
-		handle = clock.next(frame);
+		const nextAt = fired + 1 < BEAT_COUNT ? (fired + 1) * BEAT_MS : COUNT_MS;
+		handle = clock.next(frame, nextAt - elapsed);
 	};
 	frame();
 
