@@ -1,4 +1,4 @@
-/* Kembec · tokens. Derivado de 04-sistema/design-tokens.json (edición la-linea-2026-10-18d) con
+/* Kembec · tokens. Derivado de 04-sistema/design-tokens.json (edición la-linea-2026-10-29) con
    04-sistema/derivar-css.py: no se edita a mano. Claro y oscuro son dos juegos de valores con el mismo
    significado. El tema sigue al sistema y se fija con data-theme="light" o "dark" en <html>. */
 :root {
@@ -92,6 +92,9 @@
   --kembec-z-pieza-delante: 4;
   --kembec-z-primer-plano: 10;
   --kembec-sheet-offset: 8px;
+  --kembec-radius-square: 0;
+  --kembec-radius-circle: 50%;
+  --kembec-radius-bar-end: 4px;
   --kembec-dur-instant: 80ms;
   --kembec-dur-quick: 160ms;
   --kembec-dur-move: 240ms;
