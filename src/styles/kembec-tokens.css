@@ -1,0 +1,212 @@
+/* Kembec · tokens. Derivado de 04-sistema/design-tokens.json (edición la-linea-2026-10-29) con
+   04-sistema/derivar-css.py: no se edita a mano. Claro y oscuro son dos juegos de valores con el mismo
+   significado. El tema sigue al sistema y se fija con data-theme="light" o "dark" en <html>. */
+:root {
+  color-scheme: light;
+  --kembec-ink: #000000;
+  --kembec-paper: #FFFFFF;
+  --kembec-secondary: #666D77;
+  --kembec-surface: #F1F3F6;
+  --kembec-rule: #CCD0D5;
+  --kembec-control: #666D77;
+  --kembec-focus: #000000;
+  --kembec-selection: #CCD0D5;
+  --kembec-seal: #C2321B;
+  --kembec-seal-quiet: #F4D6D1;
+  --kembec-raised: #FFFFFF;
+  --kembec-edge: #CCD0D5;
+  --kembec-ok: #0B7A43;
+  --kembec-pending: #8F5A00;
+  --kembec-error: #000000;
+  --kembec-data-single: var(--kembec-ink);
+  --kembec-data-1: #D85C9E;
+  --kembec-data-2: #024E9A;
+  --kembec-data-3: #C65802;
+  --kembec-data-4: #0C9999;
+  --kembec-data-5: #475801;
+  --kembec-data-ordinal-1: #A3A9B1;
+  --kembec-data-ordinal-2: #7D848E;
+  --kembec-data-ordinal-3: #5A616B;
+  --kembec-data-ordinal-4: #383D44;
+  --kembec-data-ordinal-5: #16191D;
+  --kembec-data-negative: #C65802;
+  --kembec-data-positive: #024E9A;
+  --kembec-data-neutral: var(--kembec-rule);
+  --kembec-code-keyword: #024E9A;
+  --kembec-code-string: #0A6464;
+  --kembec-code-number: #A54500;
+  --kembec-code-fn: #A62D6C;
+  --kembec-code-name: #4A5C00;
+  --kembec-font: Inter, Arial, sans-serif;
+  --kembec-font-code: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --kembec-unit: 8px;
+  --kembec-gutter: 24px;
+  --kembec-columns: 12;
+  --kembec-text-columns: 7;
+  --kembec-container: 1440px;
+  --kembec-reading: 680px;
+  --kembec-margin-desktop: 64px;
+  --kembec-margin-mobile: 24px;
+  --kembec-margin: var(--kembec-margin-desktop);
+  --kembec-display: clamp(44px, 3.810vw + 29.14px, 84px);
+  --kembec-display-name: clamp(64px, 8.381vw + 31.31px, 152px);
+  --kembec-display-line: 0.9;
+  --kembec-display-weight: 800;
+  --kembec-display-tracking: -0.045em;
+  --kembec-titular: clamp(32px, 2.286vw + 23.09px, 56px);
+  --kembec-titular-line: 1.0714;
+  --kembec-titular-weight: 800;
+  --kembec-titular-tracking: -0.035em;
+  --kembec-subtitulo: clamp(21px, 0.286vw + 19.89px, 24px);
+  --kembec-subtitulo-line: 1.3333;
+  --kembec-subtitulo-weight: 700;
+  --kembec-subtitulo-tracking: -0.01em;
+  --kembec-subtitulo-compact: 19px;
+  --kembec-subtitulo-compact-line: 24px;
+  --kembec-entradilla: clamp(18px, 0.286vw + 16.89px, 21px);
+  --kembec-entradilla-line: 1.5238;
+  --kembec-entradilla-weight: 400;
+  --kembec-cuerpo: clamp(17px, 0.095vw + 16.63px, 18px);
+  --kembec-cuerpo-line: 1.5556;
+  --kembec-cuerpo-weight: 400;
+  --kembec-apoyo: 15px;
+  --kembec-apoyo-line: 22px;
+  --kembec-rotulo: 13px;
+  --kembec-rotulo-line: 16px;
+  --kembec-dato: 14px;
+  --kembec-dato-line: 22px;
+  --kembec-rotulo-tracking: 0.06em;
+  --kembec-space-dentro: 8px;
+  --kembec-space-par: 16px;
+  --kembec-space-grupo: 24px;
+  --kembec-space-bloque: 48px;
+  --kembec-space-seccion: 96px;
+  --kembec-space-acto: 144px;
+  --kembec-space-title-body: 24px;
+  --kembec-space-text-figure: 32px;
+  --kembec-space-figure-caption: 12px;
+  --kembec-z-fondo: 0;
+  --kembec-z-superficie: 1;
+  --kembec-z-pieza-detras: 2;
+  --kembec-z-texto: 3;
+  --kembec-z-pieza-delante: 4;
+  --kembec-z-primer-plano: 10;
+  --kembec-sheet-offset: 8px;
+  --kembec-radius-square: 0;
+  --kembec-radius-circle: 50%;
+  --kembec-radius-bar-end: 4px;
+  --kembec-dur-instant: 80ms;
+  --kembec-dur-quick: 160ms;
+  --kembec-dur-move: 240ms;
+  --kembec-dur-enter: 400ms;
+  --kembec-dur-stamp: 640ms;
+  --kembec-ease-out: cubic-bezier(0.2, 0.7, 0.1, 1);
+  --kembec-ease-in-out: cubic-bezier(0.6, 0, 0.2, 1);
+  --kembec-ease-stamp: cubic-bezier(0.3, 1.3, 0.5, 1);
+  --kembec-stagger: 80ms;
+  --kembec-shift: 16px;
+  --kembec-seal-marks: 160;
+  --kembec-seal-min: 96px;
+  --kembec-plate-bg: #060708;
+  --kembec-plate-edge: #646B75;
+  --kembec-stamp-tilt: -2deg;
+  --kembec-stamp-drop: 240ms;
+}
+
+@media (max-width: 900px) {
+  :root {
+    --kembec-margin: var(--kembec-margin-mobile);
+    --kembec-space-seccion: 64px;
+    --kembec-space-acto: 96px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --kembec-dur-instant: 0ms;
+    --kembec-dur-quick: 0ms;
+    --kembec-dur-move: 0ms;
+    --kembec-dur-enter: 0ms;
+    --kembec-dur-stamp: 0ms;
+    --kembec-stagger: 0ms;
+    --kembec-shift: 0px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --kembec-ink: #F1F3F6;
+    --kembec-paper: #0C0D0F;
+    --kembec-secondary: #9BA2AC;
+    --kembec-surface: #16181C;
+    --kembec-rule: #2C3036;
+    --kembec-control: #9BA2AC;
+    --kembec-focus: #F1F3F6;
+    --kembec-selection: #3A3F47;
+    --kembec-seal: #FF6B4F;
+    --kembec-seal-quiet: #3A1D19;
+    --kembec-raised: #1C1F24;
+    --kembec-edge: #3A3F47;
+    --kembec-ok: #45C486;
+    --kembec-pending: #E2A646;
+    --kembec-error: #F1F3F6;
+    --kembec-data-single: var(--kembec-ink);
+    --kembec-data-1: #B2397C;
+    --kembec-data-2: #0267C7;
+    --kembec-data-3: #AB4B01;
+    --kembec-data-4: #09A0A0;
+    --kembec-data-5: #819F04;
+    --kembec-data-ordinal-1: #50565F;
+    --kembec-data-ordinal-2: #737A84;
+    --kembec-data-ordinal-3: #9BA2AC;
+    --kembec-data-ordinal-4: #C4C9CF;
+    --kembec-data-ordinal-5: #F1F3F6;
+    --kembec-data-negative: #AB4B01;
+    --kembec-data-positive: #0267C7;
+    --kembec-data-neutral: var(--kembec-rule);
+    --kembec-code-keyword: #7DB8F7;
+    --kembec-code-string: #4CC9C0;
+    --kembec-code-number: #F2A45C;
+    --kembec-code-fn: #F28DC4;
+    --kembec-code-name: #B4CC4E;
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --kembec-ink: #F1F3F6;
+  --kembec-paper: #0C0D0F;
+  --kembec-secondary: #9BA2AC;
+  --kembec-surface: #16181C;
+  --kembec-rule: #2C3036;
+  --kembec-control: #9BA2AC;
+  --kembec-focus: #F1F3F6;
+  --kembec-selection: #3A3F47;
+  --kembec-seal: #FF6B4F;
+  --kembec-seal-quiet: #3A1D19;
+  --kembec-raised: #1C1F24;
+  --kembec-edge: #3A3F47;
+  --kembec-ok: #45C486;
+  --kembec-pending: #E2A646;
+  --kembec-error: #F1F3F6;
+  --kembec-data-single: var(--kembec-ink);
+  --kembec-data-1: #B2397C;
+  --kembec-data-2: #0267C7;
+  --kembec-data-3: #AB4B01;
+  --kembec-data-4: #09A0A0;
+  --kembec-data-5: #819F04;
+  --kembec-data-ordinal-1: #50565F;
+  --kembec-data-ordinal-2: #737A84;
+  --kembec-data-ordinal-3: #9BA2AC;
+  --kembec-data-ordinal-4: #C4C9CF;
+  --kembec-data-ordinal-5: #F1F3F6;
+  --kembec-data-negative: #AB4B01;
+  --kembec-data-positive: #0267C7;
+  --kembec-data-neutral: var(--kembec-rule);
+  --kembec-code-keyword: #7DB8F7;
+  --kembec-code-string: #4CC9C0;
+  --kembec-code-number: #F2A45C;
+  --kembec-code-fn: #F28DC4;
+  --kembec-code-name: #B4CC4E;
+}

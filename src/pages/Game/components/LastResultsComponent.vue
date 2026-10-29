@@ -1,4 +1,6 @@
 <script setup lang="ts">
+	import { computed } from "vue";
+
 	import type Result from "../interfaces/ResultInterface";
 	// Intrefaces
 	export interface Props {
@@ -14,8 +16,8 @@
 	//Emit
 	const emit = defineEmits<Emits>();
 
-	//Data
-	const lastResults = props.lastResults;
+	// Computed: newest first, on a copy so the parent's array is never mutated
+	const lastResults = computed<Result[]>(() => [...props.lastResults].reverse());
 
 	// Methods
 	function clearLocalStorage() {
@@ -26,16 +28,21 @@
 <template>
 	<section class="last-results">
 		<div class="title">
-			<b>Last Results</b>
+			<h2>Last results</h2>
 			<button
 				id="clear-last-results"
+				type="button"
+				aria-label="Clear last results"
 				@click="clearLocalStorage()"
 			>
-				<font-awesome-icon icon="fa solid fa-eraser" />
+				<font-awesome-icon
+					icon="fa solid fa-eraser"
+					aria-hidden="true"
+				/>
 			</button>
 		</div>
 		<div
-			v-for="(l, i) in lastResults.reverse()"
+			v-for="(l, i) in lastResults"
 			:key="i"
 			class="result"
 		>
@@ -54,27 +61,46 @@
 </template>
 <style lang="postcss" scoped>
 	.last-results {
-		@apply mt-20 flex flex-col border-t border-white/10 !pt-10 text-3xl lg:text-4xl;
+		@apply flex flex-col border-t border-ink;
+		margin-top: var(--kembec-space-bloque);
+		padding-top: var(--kembec-space-grupo);
 	}
 	.last-results > .title {
-		@apply flex flex-nowrap space-x-5 mb-10 px-3 lg:px-5;
+		@apply flex items-center justify-between pb-4;
+	}
+	.title h2 {
+		font-size: var(--kembec-subtitulo);
+		line-height: var(--kembec-subtitulo-line);
+		font-weight: var(--kembec-subtitulo-weight);
+	}
+	#clear-last-results {
+		@apply flex h-11 w-11 items-center justify-center text-secondary transition-colors hover:text-ink;
 	}
 	.result {
-		@apply grid grid-cols-3 gap-5 border-b border-white/10 py-5 text-xl lg:text-2xl;
+		@apply grid grid-cols-[1fr_auto_1fr] items-center gap-x-4 gap-y-2 border-t border-rule py-4;
 	}
 	.result > * {
-		@apply flex justify-center text-center;
+		@apply flex;
 	}
-	.vs {
-		@apply row-span-2 flex items-center;
+	.result > .player:first-child,
+	.result > .icon:nth-of-type(4) {
+		@apply justify-end text-right;
 	}
 	.player {
-		@apply drop-shadow-md;
+		@apply truncate font-bold;
 	}
-	.message {
-		@apply col-span-full mx-auto justify-center rounded-sm border-2 px-3 py-1.5 text-center font-bold tracking-wide antialiased drop-shadow-md;
+	.vs {
+		@apply row-span-2 text-secondary;
+		font-family: var(--kembec-font-code);
+		font-size: var(--kembec-rotulo);
+		letter-spacing: var(--kembec-rotulo-tracking);
 	}
 	.icon {
-		@apply text-4xl;
+		font-size: 28px;
+	}
+	.message {
+		@apply col-span-full justify-center text-secondary;
+		font-size: var(--kembec-apoyo);
+		line-height: var(--kembec-apoyo-line);
 	}
 </style>

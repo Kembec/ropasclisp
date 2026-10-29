@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-	import { computed, onBeforeMount, onMounted, ref } from "vue";
+	import { computed, nextTick, onBeforeMount, onMounted, ref } from "vue";
 
 	import { Game } from "../classes/GameClass";
 	import { Choice } from "../constants/ChoiceEnum";
+	import type { RoundOutcome } from "../interfaces/ResultInterface";
 	import Result from "./PlayGame/ResultComponent.vue";
 
 	// Interfaces
@@ -26,6 +27,7 @@
 	const player1Choice = ref<Choice>(Choice.Rock);
 	const player2Choice = ref<Choice>();
 	const resultMessage = ref<string>();
+	const outcome = ref<RoundOutcome | null>(null);
 	const firstTime = ref<boolean>(false);
 	const turn = ref<1 | 2>(1);
 
@@ -67,6 +69,17 @@
 
 		return "Play Game";
 	});
+	// What the side that is not choosing shows in place of its gestures.
+	function waitingLabel(side: 1 | 2): string {
+		if (prop.players === 1) {
+			return side === 2 ? "Picks when you play" : "";
+		}
+		if (turn.value === side) {
+			return "";
+		}
+
+		return side === 1 ? "Picked · hidden" : "Picks next";
+	}
 
 	// Methods
 	function startGame(): void {
@@ -88,8 +101,10 @@
 		player2Name.value = game.player2.name;
 		player2Choice.value = game.player2.choice;
 
-		// create a new Game with the given player names and choices
-		resultMessage.value = `The winner is: ${game.play()}`;
+		const round = game.resolve();
+		const verdict = round.winner === 0 ? "Draw" : `${round.winner === 1 ? game.player1.name : game.player2.name} wins`;
+		outcome.value = round;
+		resultMessage.value = `${round.rule}. ${verdict}.`;
 		saveResult();
 		emit("changeResult");
 	}
@@ -98,6 +113,12 @@
 		player1Choice.value = Choice.Rock;
 		player2Choice.value = Choice.Rock;
 		resultMessage.value = "";
+		outcome.value = null;
+	}
+	function closeResult(): void {
+		clearData();
+		// The dialog leaves with v-if, so focus goes back to the move by hand.
+		nextTick(() => document.getElementById("play-game")?.focus());
 	}
 	function changeName(event: Event | null | undefined, player: 1 | 2): void {
 		if (!event || (player === 2 && prop.players !== 2)) {
@@ -176,16 +197,29 @@
 				>
 					<Transition name="hand">
 						<font-awesome-icon
+							v-if="p1choice"
 							:key="p1choice"
-							:icon="'fa-regular ' + (p1choice ?? 'fa-hand-peace')"
+							:icon="'fa-regular ' + p1choice"
 						/>
+						<span
+							v-else
+							class="unknown"
+							aria-label="Hidden choice"
+							>?</span
+						>
 					</Transition>
 				</div>
-				<div class="hands">
+				<div
+					class="hands"
+					:data-waiting="waitingLabel(1)"
+				>
 					<button
 						v-for="(h, n) in Choice"
 						:class="player1Choice === h ? 'on' : undefined"
 						:key="n"
+						type="button"
+						:aria-label="String(n)"
+						:aria-pressed="player1Choice === h"
 						@click="player1Choice = h"
 					>
 						<font-awesome-icon :icon="'fa-regular ' + h" />
@@ -214,16 +248,29 @@
 						mode="out-in"
 					>
 						<font-awesome-icon
+							v-if="p2choice"
 							:key="p2choice"
-							:icon="'fa-regular ' + (p2choice ?? 'fa-hand-peace')"
+							:icon="'fa-regular ' + p2choice"
 						/>
+						<span
+							v-else
+							class="unknown"
+							aria-label="Hidden choice"
+							>?</span
+						>
 					</Transition>
 				</div>
-				<div class="hands">
+				<div
+					class="hands"
+					:data-waiting="waitingLabel(2)"
+				>
 					<button
 						v-for="(h, n) in Choice"
 						:class="player2Choice === h ? 'on' : undefined"
 						:key="n"
+						type="button"
+						:aria-label="String(n)"
+						:aria-pressed="player2Choice === h"
 						@click="player2Name ? (player2Choice = h) : null"
 					>
 						<font-awesome-icon :icon="'fa-regular ' + h" />
@@ -246,96 +293,128 @@
 			</div>
 		</div>
 		<Result
-			v-if="resultMessage"
-			:message="resultMessage"
-			:p1Choice="player1Choice"
-			:p2Choice="player2Choice"
-			@close="clearData"
+			v-if="outcome && player2Choice"
+			:outcome="outcome"
+			:p1-name="player1Name"
+			:p2-name="player2Name ?? 'BOT'"
+			:p1-choice="player1Choice"
+			:p2-choice="player2Choice"
+			:solo="prop.players === 1"
+			@close="closeResult"
 		/>
 	</section>
 </template>
 
 <style lang="postcss" scoped>
 	.play-game {
-		@apply grid grid-cols-2 gap-x-5 gap-y-16 lg:gap-x-16;
+		@apply grid grid-cols-2;
+		row-gap: var(--kembec-space-bloque);
 	}
 	.play-game > * {
 		@apply relative flex flex-col;
 	}
+	.player_1 {
+		@apply border-r border-rule pr-4 lg:pr-12;
+	}
+	.player_2 {
+		@apply pl-4 lg:pl-12;
+	}
 	.play-game > * > h2 {
-		@apply p-3 border-2 border-slate-50;
-		@apply mb-auto inline-block justify-center text-center text-3xl lg:text-6xl outline-none truncate;
+		@apply truncate border-b border-ink pb-2 outline-none;
+		font-size: var(--kembec-subtitulo);
+		line-height: var(--kembec-subtitulo-line);
+		font-weight: var(--kembec-subtitulo-weight);
+		letter-spacing: var(--kembec-subtitulo-tracking);
 	}
-	.play-game > * > span {
-		@apply mx-auto mt-10 flex justify-center rounded-lg bg-emerald-500 px-5 py-1.5 text-2xl text-white;
+	.play-game > * > h2:focus-visible {
+		outline: 2px solid var(--kembec-focus);
 	}
-	.play-game > .off {
-		@apply before:absolute before:top-0 before:left-0 before:z-50 before:h-full before:w-full before:cursor-not-allowed before:rounded-xl before:bg-black/20;
+	/* Plain CSS on purpose: Tailwind's before: utilities set content: var(--tw-content) and blanked the label. */
+	.play-game > .off > .hands::before {
+		content: attr(data-waiting);
+		position: absolute;
+		inset: 0;
+		z-index: 30;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding-inline: 8px;
+		text-align: center;
+		cursor: not-allowed;
+		background: var(--kembec-paper);
+		color: var(--kembec-secondary);
+		font-family: var(--kembec-font-code);
+		font-size: var(--kembec-rotulo);
+		line-height: var(--kembec-rotulo-line);
+		letter-spacing: var(--kembec-rotulo-tracking);
+		text-transform: uppercase;
 	}
-
-	.player_1 > .selected-hand {
+	/* The player 1 row is mirrored; the label is mirrored back so it reads. */
+	.play-game > .player_1.off > .hands::before {
 		transform: scaleX(-1);
 	}
+
+	.player_1 > .selected-hand,
 	.player_1 > .hands {
 		transform: scaleX(-1);
 	}
 
 	.selected-hand {
-		@apply relative mx-auto mt-5 rounded-full bg-white p-12 text-4xl text-slate-900 drop-shadow-md lg:mt-10 lg:p-24 lg:text-8xl;
+		@apply relative my-6 flex h-[clamp(120px,22vw,260px)] items-center justify-center text-ink lg:my-10;
+		font-size: clamp(72px, 14vw, 180px);
 	}
-	.selected-hand > svg {
+	.selected-hand > svg,
+	.selected-hand > .unknown {
 		@apply absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2;
+	}
+	.unknown {
+		font-family: var(--kembec-font-code);
+		@apply text-secondary;
+	}
+	/* Player 1's hand is mirrored; a mirrored "?" stops reading as a question mark. */
+	.player_1 > .selected-hand > .unknown {
+		transform: translate(-50%, -50%) scaleX(-1);
 	}
 
 	.hands {
-		@apply mt-7 grid grid-cols-2 gap-x-0 gap-y-7 p-3 text-4xl lg:mt-16 lg:grid-cols-5 lg:gap-x-5 lg:p-10 lg:text-5xl drop-shadow-md;
+		@apply relative grid grid-cols-3 border-t border-rule sm:grid-cols-5;
 	}
 	.hands > button {
-		@apply mx-auto flex justify-center relative;
+		@apply flex min-h-[48px] items-center justify-center border-b-2 border-transparent py-3 text-secondary transition-colors hover:text-ink;
+		font-size: clamp(24px, 3vw, 36px);
 	}
-	.hands > button::before {
-		@apply content-["▼"] opacity-0 transition-all text-amber-400 duration-200 text-base absolute bottom-[110%];
-	}
-	.hands > button.on::before,
-	.hands > button:hover::before {
-		@apply opacity-100;
-	}
-
-	.off .hands > button::before {
-		@apply hidden;
+	.hands > button.on {
+		@apply border-ink text-ink;
 	}
 
 	.footer {
-		@apply col-span-full flex flex-col;
+		@apply col-span-full grid grid-cols-1 gap-4 sm:grid-cols-2;
 	}
 	.footer > button {
-		@apply mx-auto rounded-sm px-10 font-bold drop-shadow-md  transition-all;
+		@apply flex min-h-[56px] w-full items-center justify-center px-6 transition-colors;
+		font-size: var(--kembec-subtitulo-compact);
+		line-height: var(--kembec-subtitulo-compact-line);
+		font-weight: 700;
 	}
 	#play-game {
-		@apply mb-5 bg-white py-3 text-3xl text-slate-900 hover:bg-white/90 lg:text-4xl hover:tracking-wider;
+		@apply bg-ink text-paper hover:bg-secondary;
 	}
 	#select-players {
-		@apply mb-10 border-2 border-white py-2 text-sm tracking-wider text-white lg:text-base hover:tracking-widest;
+		@apply border border-ink text-ink hover:bg-surface;
 	}
 
 	.hand-enter-active,
 	.hand-leave-active {
-		transition: all 0.2s ease;
+		transition: opacity 0.2s ease, transform 0.2s ease;
 	}
-
-	.hand-enter-from {
-		@apply !translate-x-full;
-	}
-
-	.hand-enter-to {
-		@apply -translate-x-1/2;
-	}
-
-	.hand-leave {
-		@apply -translate-x-1/2;
-	}
-
+	.hand-enter-from,
 	.hand-leave-to {
-		@apply !-translate-x-full !left-0;
+		opacity: 0;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.hand-enter-active,
+		.hand-leave-active {
+			transition: none;
+		}
 	}
 </style>
