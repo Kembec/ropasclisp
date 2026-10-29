@@ -1,4 +1,6 @@
 <script setup lang="ts">
+	import { computed } from "vue";
+
 	import type Result from "../interfaces/ResultInterface";
 	// Intrefaces
 	export interface Props {
@@ -14,8 +16,8 @@
 	//Emit
 	const emit = defineEmits<Emits>();
 
-	//Data
-	const lastResults = props.lastResults;
+	// Computed: newest first, on a copy so the parent's array is never mutated
+	const lastResults = computed<Result[]>(() => [...props.lastResults].reverse());
 
 	// Methods
 	function clearLocalStorage() {
@@ -40,7 +42,7 @@
 			</button>
 		</div>
 		<div
-			v-for="(l, i) in lastResults.reverse()"
+			v-for="(l, i) in lastResults"
 			:key="i"
 			class="result"
 		>
