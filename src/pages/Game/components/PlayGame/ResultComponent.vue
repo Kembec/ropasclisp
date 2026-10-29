@@ -1,90 +1,182 @@
 <script setup lang="ts">
-	import { onMounted, ref } from "vue";
+	import { computed, onMounted, ref } from "vue";
 
+	import { gestureName } from "../../classes/GameClass";
 	import type { Choice } from "../../constants/ChoiceEnum";
+	import type { RoundOutcome } from "../../interfaces/ResultInterface";
 
 	export interface Props {
-		message: string;
+		outcome: RoundOutcome;
+		p1Name: string;
+		p2Name: string;
 		p1Choice: Choice;
-		p2Choice?: Choice;
+		p2Choice: Choice;
+		solo: boolean;
 	}
 	export interface Emits {
 		(event: "close"): void;
 	}
-	// Props
 	const props = defineProps<Props>();
-	// Emits
 	const emit = defineEmits<Emits>();
 
-	// Data
-	const contentElement = ref<HTMLDivElement | null>(null);
+	const dialog = ref<HTMLDialogElement | null>(null);
 
-	const p1Choice = props.p1Choice;
-	const p2Choice = props.p2Choice;
+	// In one-player mode the person is player 1, so the verdict speaks to them.
+	const headline = computed<string>(() => {
+		const { winner } = props.outcome;
+		if (winner === 0) {
+			return "Draw";
+		}
+		if (props.solo) {
+			return winner === 1 ? "You win" : "You lose";
+		}
 
-	// Mounted
+		return `${winner === 1 ? props.p1Name : props.p2Name} wins`;
+	});
+	const sideClass = (side: 1 | 2): string | undefined => {
+		const { winner } = props.outcome;
+		if (winner === 0) {
+			return undefined;
+		}
+
+		return winner === side ? "won" : "lost";
+	};
+
+	// showModal makes the rest of the page inert, so Enter cannot reach the play button underneath.
 	onMounted(() => {
-		runContentElement();
+		dialog.value?.showModal();
 	});
 
-	// Methods
-	function runContentElement(): void {
-		// select the .content element and set it to contentElement
-		contentElement.value = document.querySelector(".content");
-		// if contentElement and its parent element exist
-		if (contentElement.value && contentElement.value.parentElement) {
-			// add a click event listener to the parent element that runs the clickOutside function
-			contentElement.value.parentElement.addEventListener("click", clickOutside);
-		}
+	function close(): void {
+		dialog.value?.close();
 	}
-	function clickOutside(event: MouseEvent): void {
-		// clickOutside function runs when the parent element is clicked
-		if (!contentElement.value?.contains(event.target as Node)) {
-			// if the click was not on the contentElement
-			return emit("close");
+	// The dialog fills the viewport; a click on it outside the content band is a click on the backdrop.
+	function onClick(event: MouseEvent): void {
+		if (event.target === dialog.value) {
+			close();
 		}
 	}
 </script>
 <template>
-	<aside id="result">
+	<dialog
+		id="result"
+		ref="dialog"
+		aria-labelledby="result-title"
+		aria-describedby="result-rule"
+		@click="onClick"
+		@close="emit('close')"
+	>
 		<div class="content">
-			<div class="p1">
-				<font-awesome-icon :icon="'fa-regular ' + p1Choice" />
+			<h2 id="result-title">{{ headline }}</h2>
+			<p
+				id="result-rule"
+				class="rule"
+			>
+				{{ outcome.rule }}
+			</p>
+			<div class="clash">
+				<figure :class="sideClass(1)">
+					<font-awesome-icon :icon="'fa-regular ' + p1Choice" />
+					<figcaption>
+						<span class="who">{{ p1Name }}</span>
+						<span class="what">{{ gestureName(p1Choice) }}</span>
+					</figcaption>
+				</figure>
+				<span
+					class="vs"
+					aria-hidden="true"
+					>vs</span
+				>
+				<figure :class="sideClass(2)">
+					<font-awesome-icon :icon="'fa-regular ' + p2Choice" />
+					<figcaption>
+						<span class="who">{{ p2Name }}</span>
+						<span class="what">{{ gestureName(p2Choice) }}</span>
+					</figcaption>
+				</figure>
 			</div>
-			<div class="vs">vs</div>
-			<div class="p2">
-				<font-awesome-icon :icon="'fa-regular ' + (p2Choice ?? p1Choice)" />
-			</div>
-			<div class="message">{{ message }}</div>
+			<button
+				type="button"
+				class="next"
+				autofocus
+				@click="close"
+			>
+				Next round
+			</button>
 		</div>
-	</aside>
+	</dialog>
 </template>
 <style lang="postcss" scoped>
-	aside {
-		@apply fixed top-0 left-0 z-50 h-screen w-screen bg-paper;
+	dialog {
+		@apply fixed inset-0 m-0 h-full max-h-none w-full max-w-none border-0 bg-paper p-0 text-ink;
+		height: 100dvh;
+	}
+	dialog::backdrop {
+		background: transparent;
 	}
 	.content {
-		@apply absolute inset-x-0 top-1/2 mx-auto grid w-full max-w-3xl -translate-y-1/2 grid-cols-3 items-center gap-5 border-y border-ink py-10 text-ink;
+		@apply absolute inset-x-0 top-1/2 mx-auto flex w-full max-w-3xl -translate-y-1/2 flex-col border-y border-ink py-8 lg:py-10;
+		gap: var(--kembec-space-bloque, 32px);
 		padding-inline: var(--kembec-margin);
 	}
-	.content > div {
-		@apply flex justify-center;
-	}
-	.content > .p1,
-	.content > .p2 {
-		font-size: clamp(56px, 12vw, 128px);
-	}
-	.content > .vs {
-		font-family: var(--kembec-font-code);
-		font-size: var(--kembec-dato);
-		letter-spacing: var(--kembec-rotulo-tracking);
-		@apply text-secondary;
-	}
-	.message {
-		@apply col-span-full justify-start;
+	h2 {
 		font-size: var(--kembec-titular);
 		line-height: var(--kembec-titular-line);
 		font-weight: var(--kembec-titular-weight);
 		letter-spacing: var(--kembec-titular-tracking);
+	}
+	.rule {
+		@apply -mt-4;
+		font-size: var(--kembec-subtitulo);
+		line-height: var(--kembec-subtitulo-line);
+		font-weight: var(--kembec-subtitulo-weight);
+		letter-spacing: var(--kembec-subtitulo-tracking);
+	}
+	.clash {
+		@apply grid items-end border-t border-rule pt-6;
+		grid-template-columns: 1fr auto 1fr;
+		column-gap: 16px;
+	}
+	figure {
+		@apply flex min-w-0 flex-col items-center gap-3 border-b-2 border-transparent pb-3;
+	}
+	figure > svg {
+		font-size: clamp(56px, 12vw, 120px);
+	}
+	figure.won {
+		@apply border-ink;
+	}
+	figure.lost {
+		@apply text-secondary;
+	}
+	figcaption {
+		@apply flex min-w-0 max-w-full flex-col items-center text-center;
+	}
+	.who {
+		@apply max-w-full truncate;
+		font-family: var(--kembec-font-code);
+		font-size: var(--kembec-rotulo);
+		line-height: var(--kembec-rotulo-line);
+		letter-spacing: var(--kembec-rotulo-tracking);
+		text-transform: uppercase;
+	}
+	.what {
+		font-weight: 700;
+	}
+	.vs {
+		@apply self-center text-secondary;
+		font-family: var(--kembec-font-code);
+		font-size: var(--kembec-dato);
+		letter-spacing: var(--kembec-rotulo-tracking);
+	}
+	.next {
+		@apply flex min-h-[56px] w-full items-center justify-center bg-ink px-6 text-paper transition-colors hover:bg-secondary sm:w-auto sm:self-start sm:px-10;
+		font-size: var(--kembec-subtitulo-compact);
+		line-height: var(--kembec-subtitulo-compact-line);
+		font-weight: 700;
+	}
+	.next:focus-visible {
+		outline: 2px solid var(--kembec-focus);
+		outline-offset: 3px;
 	}
 </style>
