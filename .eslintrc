@@ -13,6 +13,12 @@
 			}
 		},
 		{
+			"files": ["src/**/__tests__/*.ts"],
+			"parserOptions": {
+				"project": ["./tsconfig.vitest.json"]
+			}
+		},
+		{
 			"files": ["cypress.config.ts", "vite.config.ts", "vitest.config.ts", "playwright.config.ts"],
 			"parserOptions": {
 				"project": "./tsconfig.config.json"
