@@ -85,6 +85,7 @@
 		border-bottom: 1px solid var(--kembec-rule);
 	}
 	.wordmark {
+		min-width: 0;
 		margin-inline-end: auto;
 		font-size: var(--kembec-subtitulo-compact);
 		line-height: var(--kembec-subtitulo-compact-line);
@@ -94,8 +95,12 @@
 	.wordmark > [data-lit] {
 		color: var(--kembec-seal);
 	}
+	/* Two equal cells: both modes the width of the longer label. It must not shrink in the bar, or each
+	   cell falls back to its own min-content and the widths differ again. */
 	.modes {
-		display: inline-flex;
+		flex: none;
+		display: inline-grid;
+		grid-template-columns: 1fr 1fr;
 		border: 1px solid var(--kembec-ink);
 	}
 	.modes > button {
@@ -121,6 +126,18 @@
 	.icon[aria-pressed="false"] {
 		color: var(--kembec-secondary);
 		border-color: var(--kembec-rule);
+	}
+	/* Under 430 px the name, both equal modes and the two 44 px icons no longer fit in one row: the modes
+	   take a second row of their own, split in two equal halves, and the name stays whole. */
+	@media (max-width: 429px) {
+		.bar {
+			flex-wrap: wrap;
+			row-gap: var(--kembec-space-dentro);
+		}
+		.modes {
+			order: 1;
+			flex: 1 0 100%;
+		}
 	}
 	@media (max-width: 380px) {
 		.wordmark {

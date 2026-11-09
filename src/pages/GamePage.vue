@@ -241,8 +241,13 @@
 	.board {
 		display: grid;
 		height: 100dvh;
+		/* One column that can shrink: with an auto track the header's content width set the page's. */
+		grid-template-columns: minmax(0, 1fr);
 		grid-template-rows: auto minmax(0, 1fr) auto minmax(0, 1fr);
 		grid-template-areas: "bar" "p2" "band" "p1";
+		/* The winning hand scales past its half on the throw; clipping only the inline axis keeps that
+		   out of the page width while the lunge toward the other player stays visible. */
+		overflow-x: clip;
 		touch-action: manipulation;
 	}
 	.area-bar {
